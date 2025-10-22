@@ -17,8 +17,8 @@
     <Description>A high-performance command-line tool for formatting (pretty-printing) large JSON files while maintaining low memory usage.</Description>
     <Copyright>Copyright © 2025 JsonFormat Contributors</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/yourusername/JsonFormat</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/yourusername/JsonFormat</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/nattfalk/JsonFormat</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nattfalk/JsonFormat</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>json;formatter;pretty-print;command-line;cli;dotnet;performance</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -26,7 +26,6 @@
     <!-- Build Configuration -->
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">portable</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>link</TrimMode>
     
