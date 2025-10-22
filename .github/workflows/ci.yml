@@ -83,13 +83,23 @@ jobs:
         cd ./artifacts/osx-arm64
         tar -czf ../jsonformat-macos-arm64.tar.gz .
     
-    - name: Upload release assets
+    - name: Upload workflow artifacts
       uses: actions/upload-artifact@v4
       with:
         name: release-packages
         path: |
           ./artifacts/*.tar.gz
           ./artifacts/*.zip
+
+    - name: Upload binaries to release
+      uses: softprops/action-gh-release@v2
+      if: github.event_name == 'release'
+      with:
+        files: |
+          ./artifacts/jsonformat-linux-x64.tar.gz
+          ./artifacts/jsonformat-windows-x64.zip
+          ./artifacts/jsonformat-macos-x64.tar.gz
+          ./artifacts/jsonformat-macos-arm64.tar.gz
 
   code-quality:
     name: Code Quality
