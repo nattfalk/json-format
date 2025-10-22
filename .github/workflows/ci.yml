@@ -1,0 +1,113 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet-version: ['9.0.x']
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+    
+    - name: Restore dependencies
+      run: dotnet restore src/JsonFormat.csproj
+    
+    - name: Build
+      run: dotnet build src/JsonFormat.csproj --no-restore -c Release
+    
+    - name: Test
+      run: dotnet test src/JsonFormat.csproj --no-build --verbosity normal -c Release
+
+  build:
+    name: Build and Package
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore src/JsonFormat.csproj
+    
+    - name: Build Linux x64
+      run: dotnet publish src/JsonFormat.csproj -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -o ./artifacts/linux-x64
+    
+    - name: Build Windows x64
+      run: dotnet publish src/JsonFormat.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o ./artifacts/win-x64
+    
+    - name: Build macOS x64
+      run: dotnet publish src/JsonFormat.csproj -c Release -r osx-x64 --self-contained -p:PublishSingleFile=true -o ./artifacts/osx-x64
+    
+    - name: Build macOS arm64
+      run: dotnet publish src/JsonFormat.csproj -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true -o ./artifacts/osx-arm64
+    
+    - name: Create Linux package
+      run: |
+        cd ./artifacts/linux-x64
+        tar -czf ../jsonformat-linux-x64.tar.gz .
+    
+    - name: Create Windows package
+      run: |
+        cd ./artifacts/win-x64
+        zip -r ../jsonformat-windows-x64.zip .
+    
+    - name: Create macOS x64 package
+      run: |
+        cd ./artifacts/osx-x64
+        tar -czf ../jsonformat-macos-x64.tar.gz .
+    
+    - name: Create macOS arm64 package
+      run: |
+        cd ./artifacts/osx-arm64
+        tar -czf ../jsonformat-macos-arm64.tar.gz .
+    
+    - name: Upload release assets
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-packages
+        path: |
+          ./artifacts/*.tar.gz
+          ./artifacts/*.zip
+
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore src/JsonFormat.csproj
+    
+    - name: Build
+      run: dotnet build src/JsonFormat.csproj --no-restore -c Release
+    
+    - name: Run code analysis
+      run: dotnet build src/JsonFormat.csproj --no-restore -c Release -p:RunAnalyzersDuringBuild=true -p:TreatWarningsAsErrors=true
