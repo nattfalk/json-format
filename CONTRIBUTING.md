@@ -41,7 +41,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 ### Building the Project
 
 ```bash
-git clone https://github.com/yourusername/JsonFormat.git
+git clone https://github.com/nattfalk/JsonFormat.git
 cd JsonFormat/src
 dotnet restore
 dotnet build

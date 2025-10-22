@@ -18,7 +18,7 @@ A high-performance command-line tool for formatting (pretty-printing) large JSON
 ### Build from Source
 
 ```bash
-git clone https://github.com/yourusername/JsonFormat.git
+git clone https://github.com/nattfalk/JsonFormat.git
 cd JsonFormat/src
 dotnet build -c Release
 ```
